@@ -19,6 +19,7 @@ namespace RapidOCRLib
         private DbNet dbNet;
         private AngleNet angleNet;
         private CrnnNet crnnNet;
+        private bool hasAngleNet;
 
         /// <summary>
         /// The path of the Det model file.
@@ -102,7 +103,15 @@ namespace RapidOCRLib
                     ThreadNum = numThread;
                 }
                 await dbNet.InitModel(this.DetPath, ThreadNum);
-                await angleNet.InitModel(this.ClsPath, ThreadNum);
+                if (!string.IsNullOrWhiteSpace(this.ClsPath))
+                {
+                    await angleNet.InitModel(this.ClsPath, ThreadNum);
+                    hasAngleNet = true;
+                }
+                else
+                {
+                    hasAngleNet = false;
+                }
                 await crnnNet.InitModel(this.RecPath, keysPath, ThreadNum);
             }
             catch (Exception ex)
@@ -126,9 +135,15 @@ namespace RapidOCRLib
         private void _CheckModelFilesExist()
         {
             _ = File.Exists(this.DetPath) ? true : throw new Exception("The det model file does not exist.");
-            _ = File.Exists(this.ClsPath) ? true : throw new Exception("The cls model file does not exist.");
+            if (!string.IsNullOrWhiteSpace(this.ClsPath))
+            {
+                _ = File.Exists(this.ClsPath) ? true : throw new Exception("The cls model file does not exist.");
+            }
             _ = File.Exists(this.RecPath) ? true : throw new Exception("The rec model file does not exist.");
-            _ = File.Exists(this.KeyDicPath) ? true : throw new Exception("The key dictory file does not exist.");
+            if (!string.IsNullOrWhiteSpace(this.KeyDicPath))
+            {
+                _ = File.Exists(this.KeyDicPath) ? true : throw new Exception("The key dictory file does not exist.");
+            }
         }
 
         /// <summary>
@@ -284,6 +299,15 @@ namespace RapidOCRLib
 
             //---------- getPartImages ----------
             List<Mat> partImages = OcrUtils.GetPartImages(src, textBoxes);
+            // Skip degenerate detections whose crops are empty; the angle and recognition nets cannot process them.
+            for (int i = partImages.Count - 1; i >= 0; i--)
+            {
+                if (partImages[i].IsEmpty || partImages[i].Rows == 0 || partImages[i].Cols == 0)
+                {
+                    partImages.RemoveAt(i);
+                    textBoxes.RemoveAt(i);
+                }
+            }
             if (isPartImg)
             {
                 for (int i = 0; i < partImages.Count; i++)
@@ -293,7 +317,7 @@ namespace RapidOCRLib
             }
 
             Console.WriteLine("---------- step: angleNet getAngles ----------");
-            List<Angle> angles = angleNet.GetAngles(partImages, doAngle, mostAngle);
+            List<Angle> angles = angleNet.GetAngles(partImages, doAngle && hasAngleNet, mostAngle);
             //angles.ForEach(x => Console.WriteLine(x));
 
             //Rotate partImgs

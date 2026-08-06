@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace RapidOCRWinform
 {
@@ -40,7 +39,7 @@ namespace RapidOCRWinform
             {
                 MessageBox.Show("模型文件不存在:" + detPath);
             }
-            bool isClsExists = File.Exists(clsPath);
+            bool isClsExists = string.IsNullOrWhiteSpace(clsNameTextBox.Text) || File.Exists(clsPath);
             if (!isClsExists)
             {
                 MessageBox.Show("模型文件不存在:" + clsPath);
@@ -50,7 +49,7 @@ namespace RapidOCRWinform
             {
                 MessageBox.Show("模型文件不存在:" + recPath);
             }
-            bool isKeysExists = File.Exists(recPath);
+            bool isKeysExists = string.IsNullOrWhiteSpace(keysNameTextBox.Text) || File.Exists(keysPath);
             if (!isKeysExists)
             {
                 MessageBox.Show("Keys文件不存在:" + keysPath);
@@ -78,7 +77,7 @@ namespace RapidOCRWinform
             {
                 MessageBox.Show("模型文件不存在:" + detPath);
             }
-            bool isClsExists = File.Exists(clsPath);
+            bool isClsExists = string.IsNullOrWhiteSpace(clsNameTextBox.Text) || File.Exists(clsPath);
             if (!isClsExists)
             {
                 MessageBox.Show("模型文件不存在:" + clsPath);
@@ -88,7 +87,7 @@ namespace RapidOCRWinform
             {
                 MessageBox.Show("模型文件不存在:" + recPath);
             }
-            bool isKeysExists = File.Exists(recPath);
+            bool isKeysExists = string.IsNullOrWhiteSpace(keysNameTextBox.Text) || File.Exists(keysPath);
             if (!isKeysExists)
             {
                 MessageBox.Show("Keys文件不存在:" + keysPath);

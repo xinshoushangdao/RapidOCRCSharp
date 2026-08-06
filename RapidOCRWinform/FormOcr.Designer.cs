@@ -216,7 +216,7 @@
             detNameTextBox.Name = "detNameTextBox";
             detNameTextBox.Size = new Size(732, 27);
             detNameTextBox.TabIndex = 12;
-            detNameTextBox.Text = "ch_PP-OCRv5_mobile_det.onnx";
+            detNameTextBox.Text = "PP-OCRv6_det_medium.onnx";
             // 
             // label10
             // 
@@ -254,7 +254,7 @@
             recNameTextBox.Name = "recNameTextBox";
             recNameTextBox.Size = new Size(732, 27);
             recNameTextBox.TabIndex = 16;
-            recNameTextBox.Text = "ch_PP-OCRv5_rec_mobile_infer.onnx";
+            recNameTextBox.Text = "PP-OCRv6_rec_medium.onnx";
             // 
             // label12
             // 
@@ -273,7 +273,7 @@
             keysNameTextBox.Name = "keysNameTextBox";
             keysNameTextBox.Size = new Size(732, 27);
             keysNameTextBox.TabIndex = 18;
-            keysNameTextBox.Text = "ppocrv5_dict.txt";
+            keysNameTextBox.Text = "ppocrv6_dict.txt";
             // 
             // label5
             // 
@@ -324,8 +324,8 @@
             // doAngleCheckBox
             // 
             doAngleCheckBox.AutoSize = true;
-            doAngleCheckBox.Checked = true;
-            doAngleCheckBox.CheckState = CheckState.Checked;
+            doAngleCheckBox.Checked = false;
+            doAngleCheckBox.CheckState = CheckState.Unchecked;
             doAngleCheckBox.Location = new Point(6, 272);
             doAngleCheckBox.Margin = new Padding(4, 5, 4, 5);
             doAngleCheckBox.Name = "doAngleCheckBox";

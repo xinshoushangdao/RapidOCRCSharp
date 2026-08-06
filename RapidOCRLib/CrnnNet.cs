@@ -40,7 +40,7 @@ namespace RapidOCRLib
                 op.IntraOpNumThreads = numThread;
                 crnnNet = new InferenceSession(path, op);
                 inputNames = crnnNet.InputMetadata.Keys.ToList();
-                keys = InitKeys(keysPath);
+                keys = InitKeys(crnnNet, keysPath);
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -49,7 +49,36 @@ namespace RapidOCRLib
                 throw;
             }
         }
-        private List<string> InitKeys(string path)
+
+        private List<string> InitKeys(InferenceSession session, string keysPath)
+        {
+            // PP-OCRv5/v6 rec models embed the character dictionary in ONNX metadata.
+            if (session.ModelMetadata.CustomMetadataMap.TryGetValue("character", out string characters))
+            {
+                List<string> keys = new List<string>();
+                keys.Add("#");
+                string[] lines = characters.Split('\n');
+                int count = lines.Length;
+                if (count > 0 && lines[count - 1].Length == 0)
+                {
+                    count--;
+                }
+                for (int i = 0; i < count; i++)
+                {
+                    keys.Add(lines[i]);
+                }
+                keys.Add(" ");
+                Console.WriteLine($"keys Size = {keys.Count}");
+                return keys;
+            }
+            if (string.IsNullOrWhiteSpace(keysPath))
+            {
+                throw new Exception("The rec model does not embed a character dictionary and no key dictory file was provided.");
+            }
+            return InitKeysFromFile(keysPath);
+        }
+
+        private List<string> InitKeysFromFile(string path)
         {
             StreamReader sr = new StreamReader(path, Encoding.UTF8);
             List<string> keys = new List<string>();

@@ -12,4 +12,10 @@
     <ProjectReference Include="..\RapidOCRLib\RapidOCRLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="models\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
