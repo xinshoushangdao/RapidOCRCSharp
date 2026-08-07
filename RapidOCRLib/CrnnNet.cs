@@ -1,4 +1,4 @@
-﻿using Emgu.CV;
+using Emgu.CV;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using RapidOCRLib.Models;
@@ -23,6 +23,8 @@ namespace RapidOCRLib
         private List<string> keys;
         private List<string> inputNames;
 
+        public string ProviderInfo { get; private set; } = "NotInitialized";
+
         public CrnnNet() { }
 
         ~CrnnNet()
@@ -30,14 +32,13 @@ namespace RapidOCRLib
             crnnNet?.Dispose();
         }
 
-        public async Task InitModel(string path, string keysPath, int numThread)
+        public async Task InitModel(string path, string keysPath, int numThread, bool useGpu = false, int gpuDeviceId = 0)
         {
             try
             {
-                SessionOptions op = new SessionOptions();
-                op.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_EXTENDED;
-                op.InterOpNumThreads = numThread;
-                op.IntraOpNumThreads = numThread;
+                SessionOptions op = OcrUtils.CreateSessionOptions(OcrUtils.NetKind.Recognition, numThread, useGpu, gpuDeviceId, out var providerInfo);
+                ProviderInfo = providerInfo;
+                Console.WriteLine($"[CrnnNet] Loading model with provider: {providerInfo}");
                 crnnNet = new InferenceSession(path, op);
                 inputNames = crnnNet.InputMetadata.Keys.ToList();
                 keys = InitKeys(crnnNet, keysPath);
